@@ -1,0 +1,14 @@
+---
+description: Structure and naming for blog posts
+globs: docs/writing/posts/**/*.md
+alwaysApply: false
+---
+
+# Blog post standards
+
+- Filename: kebab-case, matching `slug` when possible.
+- H1 title, then excerpt, then `<!-- more -->`.
+- H2 for sections, H3 for subsections.
+- Images go in `docs/writing/posts/img/`.
+- Link the post from `docs/writing/index.md` if it should appear on Writing.
+- Do not edit `mkdocs.yml` or `overrides/` for a normal post.

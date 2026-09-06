@@ -1,0 +1,146 @@
+site_name: Nam
+site_author: Nam
+site_description: >-
+  Personal notes and writing.
+repo_name: blog
+repo_url: https://github.com/namndinh/blog/
+site_url: https://namndinh.github.io/blog/
+edit_uri: edit/main/docs/
+theme:
+  name: material
+  custom_dir: overrides
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+    admonition:
+      note: octicons/tag-16
+      abstract: octicons/checklist-16
+      info: octicons/info-16
+      tip: octicons/squirrel-16
+      success: octicons/check-16
+      question: octicons/question-16
+      warning: octicons/alert-16
+      failure: octicons/x-circle-16
+      danger: octicons/zap-16
+      bug: octicons/bug-16
+      example: octicons/beaker-16
+      quote: octicons/quote-16
+  features:
+    - announce.dismiss
+    - content.action.edit
+    - content.action.view
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - content.tabs.link
+    - content.tooltips
+    - header.autohide
+    - navigation.expand
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.prune
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+  palette:
+    - scheme: youtube
+  font:
+    text: Roboto
+    code: Roboto Mono
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      normalize_issue_symbols: true
+      repo_url_shorthand: true
+      user: namndinh
+      repo: blog
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - pymdownx.arithmatex:
+      generic: true
+nav:
+  - Home: index.md
+  - Writing: writing/index.md
+plugins:
+  - rss:
+      match_path: "writing/posts/.*"
+      feed_ttl: 1440
+      feeds_filenames:
+        rss_created: feed_rss_created.xml
+        rss_updated: feed_rss_updated.xml
+      date_from_meta:
+        as_creation: date
+        as_update: date
+      categories:
+        - categories
+        - tags
+  - search:
+      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - minify:
+      minify_html: true
+  - blog:
+      blog_dir: writing
+      blog_toc: true
+      post_dir: writing/posts
+      post_date_format: yyyy/MM/dd
+      post_url_format: "{date}/{slug}"
+      authors_file: "{blog}/.authors.yml"
+extra:
+  social:
+    - icon: fontawesome/solid/rss
+      link: feed_rss_created.xml
+    - icon: fontawesome/brands/github
+      link: https://github.com/namndinh
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/namnhutdinh/
+extra_css:
+  - stylesheets/extra.css
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+copyright: Copyright &copy; 2026 Nam

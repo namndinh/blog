@@ -1,0 +1,16 @@
+.cache/
+.venv/
+__pycache__/
+site/
+docs/writing/private
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Build scripts
+scripts/build_with_uv.sh

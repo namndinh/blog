@@ -1,0 +1,15 @@
+---
+description: Local build and quality checks
+alwaysApply: false
+---
+
+# Development workflow
+
+```bash
+uv sync
+uv run mkdocs serve
+uv run mkdocs build
+```
+
+Pre-commit runs Prettier on Markdown and checks that posts include
+`<!-- more -->`. Run `pre-commit run --all-files` before a large change.

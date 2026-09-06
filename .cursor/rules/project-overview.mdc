@@ -1,0 +1,15 @@
+---
+description: What this repository is
+alwaysApply: true
+---
+
+# Project overview
+
+Personal blog for Nam. Material for MkDocs. Content is Markdown in `docs/`.
+
+- Homepage: `docs/index.md`
+- Writing index: `docs/writing/index.md`
+- Posts: `docs/writing/posts/`
+- Authors: `docs/writing/.authors.yml`
+- Site config: `mkdocs.yml`
+- Contributor contract: `AGENTS.md`

@@ -1,0 +1,10 @@
+site/
+.venv/
+__pycache__/
+*.pyc
+mkdocs.yml
+*.yaml
+*.yml
+requirements*.txt
+**/node_modules/
+**/.git/

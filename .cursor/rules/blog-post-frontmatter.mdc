@@ -1,0 +1,30 @@
+---
+description: Frontmatter required on every blog post
+globs: docs/writing/posts/**/*.md
+alwaysApply: false
+---
+
+# Blog post frontmatter
+
+Every file in `docs/writing/posts/` except `index.md` needs:
+
+```yaml
+---
+authors:
+  - nam
+categories:
+  - Notes
+comments: false
+date: YYYY-MM-DD
+description: One or two sentences.
+draft: false
+slug: url-friendly-slug
+tags:
+  - tag
+---
+```
+
+Then an `#` title, an excerpt, `<!-- more -->`, and the rest of the post.
+
+New authors must be added to `docs/writing/.authors.yml` before they appear
+in `authors`.
