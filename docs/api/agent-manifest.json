@@ -3,7 +3,7 @@
   "description": "Personal notes and writing. A static Markdown blog. Public MCP read tools; writes open draft GitHub pull requests.",
   "url": "https://namndinh.github.io/blog/",
   "llms_txt": "https://namndinh.github.io/blog/llms.txt",
-  "mcp": "https://nam-blog-mcp.namndinh.workers.dev/mcp",
+  "mcp": "https://nam-blog-mcp.namnhutdinh.workers.dev/mcp",
   "feeds": [
     {
       "type": "application/rss+xml",

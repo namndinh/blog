@@ -30,3 +30,8 @@ npx wrangler dev
 
 - Health: `http://127.0.0.1:8787/health`
 - MCP: `http://127.0.0.1:8787/mcp`
+
+## Live
+
+- Health: `https://nam-blog-mcp.namnhutdinh.workers.dev/health`
+- MCP: `https://nam-blog-mcp.namnhutdinh.workers.dev/mcp`

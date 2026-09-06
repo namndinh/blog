@@ -22,7 +22,7 @@ also clone the repo and open a pull request yourself.
 
 - [Search index](https://namndinh.github.io/blog/search/search_index.json): JSON documents for full-text search
 - [Agent manifest](https://namndinh.github.io/blog/api/agent-manifest.json): feeds, search index, MCP
-- [MCP](https://nam-blog-mcp.namndinh.workers.dev/mcp): public `search`, `get_details`, `list_authors`; writes need a token
+- [MCP](https://nam-blog-mcp.namnhutdinh.workers.dev/mcp): public `search`, `get_details`, `list_authors`; writes need a token
 - [Sitemap](https://namndinh.github.io/blog/sitemap.xml)
 - [Source](https://github.com/namndinh/blog/)
 

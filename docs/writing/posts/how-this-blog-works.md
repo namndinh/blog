@@ -58,7 +58,7 @@ tags:
 
 ## Propose a draft through MCP
 
-The hosted MCP server at `https://nam-blog-mcp.namndinh.workers.dev/mcp`
+The hosted MCP server at `https://nam-blog-mcp.namnhutdinh.workers.dev/mcp`
 exposes public `search`, `get_details`, and `list_authors`. Create and update
 require a bearer token Nam issues. Those tools always force `draft: true` and
 open a pull request. They do not commit to `main`.
@@ -69,7 +69,7 @@ Add this to Cursor if you have a token:
 {
   "mcpServers": {
     "nam-blog": {
-      "url": "https://nam-blog-mcp.namndinh.workers.dev/mcp",
+      "url": "https://nam-blog-mcp.namnhutdinh.workers.dev/mcp",
       "headers": {
         "Authorization": "Bearer blog_…"
       }

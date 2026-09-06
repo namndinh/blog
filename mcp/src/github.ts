@@ -16,12 +16,17 @@ export interface PullRequest {
 }
 
 export class GitHubClient {
+  private readonly fetchImpl: typeof fetch;
+
   constructor(
     private readonly repo: string,
     private readonly token: string | undefined,
     private readonly defaultBranch: string,
-    private readonly fetchImpl: typeof fetch = fetch,
-  ) {}
+    fetchImpl: typeof fetch = fetch,
+  ) {
+    // Workers `fetch` throws Illegal invocation if called as a method.
+    this.fetchImpl = (input, init) => fetchImpl(input, init);
+  }
 
   private headers(extra?: HeadersInit): Headers {
     const headers = new Headers(extra);
