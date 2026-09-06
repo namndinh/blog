@@ -1,9 +1,9 @@
 {
   "name": "Nam",
-  "description": "Personal notes and writing. A static Markdown blog with no CMS.",
+  "description": "Personal notes and writing. A static Markdown blog. Public MCP read tools; writes open draft GitHub pull requests.",
   "url": "https://namdinh.xyz/",
   "llms_txt": "https://namdinh.xyz/llms.txt",
-  "mcp": null,
+  "mcp": "https://nam-blog-mcp.namnhutdinh.workers.dev/mcp",
   "feeds": [
     {
       "type": "application/rss+xml",
@@ -19,19 +19,42 @@
   "tools": [
     {
       "name": "search",
-      "description": "Full-text search over published pages. GET the JSON index and query it locally.",
-      "url": "https://namdinh.xyz/search/search_index.json",
-      "method": "GET"
+      "description": "Full-text search over published pages.",
+      "auth": "none"
     },
     {
       "name": "get_details",
-      "description": "Fetch a page, RSS item, or Markdown source by URL. Pages are static HTML.",
-      "url": "https://namdinh.xyz/",
-      "method": "GET"
+      "description": "Fetch published Markdown by slug, path, or URL.",
+      "auth": "none"
+    },
+    {
+      "name": "list_authors",
+      "description": "List authors from .authors.yml, including GitHub name, avatar, and profile URL.",
+      "auth": "none"
+    },
+    {
+      "name": "validate_post",
+      "description": "Dry-run frontmatter and excerpt validation. No GitHub write.",
+      "auth": "bearer",
+      "scopes": ["posts:create"]
+    },
+    {
+      "name": "create_post",
+      "description": "Create a draft post and open a GitHub pull request. Always draft: true. New authors may be GitHub usernames; their profile is written to .authors.yml.",
+      "auth": "bearer",
+      "scopes": ["posts:create"]
+    },
+    {
+      "name": "update_post",
+      "description": "Update a post on a branch and open a pull request. draft: false requires posts:publish.",
+      "auth": "bearer",
+      "scopes": ["posts:update"]
     }
   ],
   "rate_limits": {
-    "note": "Static GitHub Pages. No application rate limit or billing."
+    "public": "60 requests per minute per IP",
+    "write": "10 requests per minute per token",
+    "note": "Machine-readable errors use code, message, retryable, retry_after."
   },
   "pricing": "free"
 }

@@ -1,0 +1,39 @@
+# nam-blog MCP
+
+Remote MCP server for this blog, hosted as a Cloudflare Worker. Public agents can search and fetch published posts. Token holders open **draft** pull requests. Nothing goes live until a human merges and sets `draft: false`.
+
+## Connect Cloudflare
+
+```bash
+cd mcp
+npx wrangler login --device --browser=false
+```
+
+Approve the printed URL and code on dash.cloudflare.com. Then:
+
+```bash
+npx wrangler secret put GITHUB_TOKEN
+npx wrangler secret put MCP_TOKENS
+npx wrangler deploy
+```
+
+`GITHUB_TOKEN` needs Contents and Pull requests on `namndinh/blog`. Public `search`, `get_details`, and `list_authors` work without it. `MCP_TOKENS` is a JSON array of hashed records from `npm run token`.
+
+`create_post` / `update_post` accept an existing author id or a GitHub username. Unknown usernames are resolved against the public GitHub profile and appended to `docs/writing/.authors.yml` on the draft PR (name, avatar, profile URL).
+
+## Local
+
+```bash
+cd mcp
+npm install
+npm test
+npx wrangler dev
+```
+
+- Health: `http://127.0.0.1:8787/health`
+- MCP: `http://127.0.0.1:8787/mcp`
+
+## Live
+
+- Health: `https://nam-blog-mcp.namnhutdinh.workers.dev/health`
+- MCP: `https://nam-blog-mcp.namnhutdinh.workers.dev/mcp`
