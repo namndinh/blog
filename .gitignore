@@ -11,6 +11,7 @@ docs/writing/private
 # Node.js
 node_modules/
 package-lock.json
+!mcp/package-lock.json
 
 # Build scripts
 scripts/build_with_uv.sh

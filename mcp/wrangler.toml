@@ -1,0 +1,9 @@
+name = "nam-blog-mcp"
+main = "src/index.ts"
+compatibility_date = "2026-09-06"
+
+[vars]
+BLOG_REPO = "namndinh/blog"
+BLOG_SITE_URL = "https://namndinh.github.io/blog"
+BLOG_SEARCH_INDEX_URL = "https://namndinh.github.io/blog/search/search_index.json"
+BLOG_DEFAULT_BRANCH = "main"

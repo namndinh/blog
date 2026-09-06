@@ -3,6 +3,10 @@
 This site is a Git repo. Technical contributors can clone it, edit Markdown,
 and send a pull request. You do not need a CMS account.
 
+Collaborators with a bearer token can also propose drafts through the MCP
+server. That path always sets `draft: true` and opens a pull request. See
+[mcp/README.md](./mcp/README.md). A human still merges and publishes.
+
 ## Preview
 
 ```bash

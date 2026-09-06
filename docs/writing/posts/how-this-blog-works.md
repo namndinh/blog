@@ -5,7 +5,7 @@ categories:
   - Meta
 comments: false
 date: 2026-09-06
-description: How this site is built and how to add a post by cloning the repo.
+description: How this site is built, how to add a post by cloning the repo, and how the MCP draft path works.
 draft: false
 slug: how-this-blog-works
 tags:
@@ -55,6 +55,28 @@ tags:
 3. Write an `#` title, then an excerpt, then `<!-- more -->`, then the rest.
 4. Link the post from `docs/writing/index.md` if it should show on the Writing page.
 5. If you are a new author, add yourself to `docs/writing/.authors.yml`.
+
+## Propose a draft through MCP
+
+The hosted MCP server at `https://nam-blog-mcp.namndinh.workers.dev/mcp`
+exposes public `search`, `get_details`, and `list_authors`. Create and update
+require a bearer token Nam issues. Those tools always force `draft: true` and
+open a pull request. They do not commit to `main`.
+
+Add this to Cursor if you have a token:
+
+```json
+{
+  "mcpServers": {
+    "nam-blog": {
+      "url": "https://nam-blog-mcp.namndinh.workers.dev/mcp",
+      "headers": {
+        "Authorization": "Bearer blog_…"
+      }
+    }
+  }
+}
+```
 
 ## Send it back
 

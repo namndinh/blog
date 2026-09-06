@@ -2,10 +2,13 @@
 
 > Personal notes and writing.
 
-This is Nam's Markdown blog. There is no CMS and no write API. Pages are
-static HTML built with Material for MkDocs. The source is Markdown in
-https://github.com/namndinh/blog/. To add or fix a page, clone the repo
-and open a pull request.
+This is Nam's Markdown blog. Pages are static HTML built with Material for
+MkDocs. The source is Markdown in https://github.com/namndinh/blog/.
+
+Public agents can search and fetch posts through the MCP server. Creating or
+updating a post requires a bearer token and opens a draft pull request. A
+human still merges and sets `draft: false` before anything goes live. You can
+also clone the repo and open a pull request yourself.
 
 ## Writing
 
@@ -18,9 +21,10 @@ and open a pull request.
 ## For agents
 
 - [Search index](https://namndinh.github.io/blog/search/search_index.json): JSON documents for full-text search
-- [Agent manifest](https://namndinh.github.io/blog/api/agent-manifest.json): feeds, search index, no MCP
+- [Agent manifest](https://namndinh.github.io/blog/api/agent-manifest.json): feeds, search index, MCP
+- [MCP](https://nam-blog-mcp.namndinh.workers.dev/mcp): public `search`, `get_details`, `list_authors`; writes need a token
 - [Sitemap](https://namndinh.github.io/blog/sitemap.xml)
 - [Source](https://github.com/namndinh/blog/)
 
-This site is read-only. There is no login, checkout, or MCP server. Fetch
-pages and the search index over HTTPS. To publish, open a GitHub pull request.
+Reads are public. Writes go through MCP as draft PRs, or through GitHub
+directly. There is no login or checkout on the site itself.

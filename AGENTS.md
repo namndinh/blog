@@ -8,3 +8,4 @@
 - Link noteworthy posts from `docs/writing/index.md`.
 - New authors go in `docs/writing/.authors.yml`.
 - Local preview: `uv run mkdocs serve`. Local build: `uv run mkdocs build`.
+- Remote MCP (Cloudflare Worker) lives in `mcp/`. Public search/get_details; writes open draft PRs.
