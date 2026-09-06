@@ -8,6 +8,7 @@ const authorsYaml = `authors:
   nam:
     name: Nam
     description: Author
+    avatar: https://avatars.githubusercontent.com/u/43260973?v=4
     url: https://github.com/namndinh
 `;
 
@@ -58,6 +59,20 @@ function githubFetch() {
     const method = (init?.method || "GET").toUpperCase();
     const body = init?.body ? JSON.parse(String(init.body)) : {};
 
+    if (url.includes("/users/") && method === "GET") {
+      const login = decodeURIComponent(url.split("/users/").pop() ?? "").toLowerCase();
+      const users: Record<string, object> = {
+        alice: {
+          login: "alice",
+          name: "Alice Example",
+          avatar_url: "https://avatars.githubusercontent.com/u/1?v=4",
+          html_url: "https://github.com/alice",
+          bio: "Guest writer",
+        },
+      };
+      const user = users[login];
+      return user ? json(user) : json({ message: "Not Found" }, 404);
+    }
     if (url.includes("/git/ref/heads/main") && method === "GET") {
       return json({ object: { sha: "main-sha" } });
     }
@@ -141,10 +156,42 @@ describe("createPost", () => {
     expect(pulls[0]?.labels).toEqual(expect.arrayContaining(["mcp", "draft-post"]));
   });
 
-  it("rejects an unknown author", async () => {
+  it("adds a GitHub username to .authors.yml", async () => {
+    const { client, files } = githubFetch();
+    const result = await createPost(client, collaborator, {
+      ...draftInput,
+      slug: "guest-note",
+      authors: ["alice"],
+    });
+    expect(result.authors_added).toEqual([
+      expect.objectContaining({
+        id: "alice",
+        name: "Alice Example",
+        avatar: "https://avatars.githubusercontent.com/u/1?v=4",
+      }),
+    ]);
+    expect(files.get("docs/writing/.authors.yml")?.content).toContain("alice:");
+    expect(files.get("docs/writing/.authors.yml")?.content).toContain(
+      "avatar: https://avatars.githubusercontent.com/u/1?v=4",
+    );
+  });
+
+  it("maps a GitHub login to an existing author id", async () => {
+    const { client, files } = githubFetch();
+    const result = await createPost(client, collaborator, {
+      ...draftInput,
+      slug: "nam-alias",
+      authors: ["namndinh"],
+    });
+    expect(result.validation).toMatchObject({ authors: ["nam"] });
+    expect(result.authors_added).toEqual([]);
+    expect(files.get("docs/writing/.authors.yml")?.content).toBe(authorsYaml);
+  });
+
+  it("rejects a login that is not a GitHub user", async () => {
     const { client } = githubFetch();
     await expect(
-      createPost(client, collaborator, { ...draftInput, authors: ["alice"] }),
+      createPost(client, collaborator, { ...draftInput, authors: ["definitely-not-a-user"] }),
     ).rejects.toMatchObject({ code: "unknown_author" });
   });
 

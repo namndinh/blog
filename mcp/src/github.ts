@@ -1,6 +1,6 @@
 import { agentIdentity } from "./auth.js";
 import { BlogError } from "./errors.js";
-import type { Principal } from "./types.js";
+import type { GitHubUserProfile, Principal } from "./types.js";
 
 export interface GitHubFile {
   path: string;
@@ -111,6 +111,26 @@ export class GitHubClient {
       path,
       sha: "",
       content: await response.text(),
+    };
+  }
+
+  async getUser(login: string): Promise<GitHubUserProfile> {
+    const data = await this.request<{
+      login: string;
+      name: string | null;
+      avatar_url: string;
+      html_url: string;
+      bio: string | null;
+    }>(`/users/${encodeURIComponent(login)}`);
+    if (!data.login || !data.avatar_url || !data.html_url) {
+      throw new BlogError("github_error", `GitHub user '${login}' is missing profile fields`);
+    }
+    return {
+      login: data.login,
+      name: data.name,
+      avatar_url: data.avatar_url,
+      html_url: data.html_url,
+      bio: data.bio,
     };
   }
 

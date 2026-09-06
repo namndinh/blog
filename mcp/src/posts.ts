@@ -4,6 +4,8 @@ import {
   appendWritingIndexLink,
   knownAuthorIds,
   parseAuthorsYaml,
+  renderAuthorsYaml,
+  resolveAuthorIds,
 } from "./authors.js";
 import { BlogError } from "./errors.js";
 import {
@@ -21,7 +23,7 @@ import {
   validatePostFields,
   validationReport,
 } from "./validate.js";
-import type { PostFields, Principal } from "./types.js";
+import type { AuthorInfo, PostFields, Principal } from "./types.js";
 
 export interface CreateInput {
   title: string;
@@ -84,16 +86,21 @@ export async function validateCreate(
   input: CreateInput,
   allowPublish: boolean,
 ) {
-  const authors = await listAuthors(github);
+  const authorsFile = await github.getFile(AUTHORS_PATH);
+  const resolved = await resolveAuthorIds(
+    input.authors,
+    parseAuthorsYaml(authorsFile.content),
+    (login) => github.getUser(login),
+  );
   const fields = validatePostFields(
-    { ...input, comments: input.comments ?? false, draft: true },
-    knownAuthorIds(authors),
+    { ...input, authors: resolved.ids, comments: input.comments ?? false, draft: true },
+    knownAuthorIds(resolved.catalog),
     { forceDraft: true, allowPublish },
   );
   if (await github.fileExists(postPath(fields.slug))) {
     throw new BlogError("slug_taken", `A post with slug '${fields.slug}' already exists on main`);
   }
-  return fields;
+  return { fields, authorsFile, authorsAdded: resolved.added, authorsCatalog: resolved.catalog };
 }
 
 export async function validateUpdate(
@@ -103,13 +110,19 @@ export async function validateUpdate(
 ) {
   const existing = await github.getFile(postPath(input.slug));
   const parsed = parseFrontmatter(existing.content);
-  const authors = await listAuthors(github);
+  const authorsFile = await github.getFile(AUTHORS_PATH);
+  const requested = input.authors ?? parsed.frontmatter.authors;
+  const resolved = await resolveAuthorIds(
+    requested,
+    parseAuthorsYaml(authorsFile.content),
+    (login) => github.getUser(login),
+  );
   const merged: PostFields = {
     ...parsed.frontmatter,
     title: input.title ?? parsed.title,
     excerpt: input.excerpt ?? parsed.excerpt,
     body: input.body ?? parsed.body,
-    authors: input.authors ?? parsed.frontmatter.authors,
+    authors: resolved.ids,
     categories: input.categories ?? parsed.frontmatter.categories,
     tags: input.tags ?? parsed.frontmatter.tags,
     comments: input.comments ?? parsed.frontmatter.comments,
@@ -118,11 +131,17 @@ export async function validateUpdate(
     draft: input.draft ?? parsed.frontmatter.draft,
     slug: parsed.frontmatter.slug,
   };
-  const fields = validatePostFields(merged, knownAuthorIds(authors), {
+  const fields = validatePostFields(merged, knownAuthorIds(resolved.catalog), {
     forceDraft: false,
     allowPublish,
   });
-  return { fields, existing };
+  return {
+    fields,
+    existing,
+    authorsFile,
+    authorsAdded: resolved.added,
+    authorsCatalog: resolved.catalog,
+  };
 }
 
 export async function createPost(
@@ -144,9 +163,17 @@ export async function createPost(
     }
   }
 
-  const fields = await validateCreate(github, input, allowPublish);
+  const { fields, authorsFile, authorsAdded, authorsCatalog } = await validateCreate(
+    github,
+    input,
+    allowPublish,
+  );
   if (input.dry_run) {
-    return { dry_run: true, validation: validationReport(fields) };
+    return {
+      dry_run: true,
+      validation: validationReport(fields),
+      authors_added: authorsAdded,
+    };
   }
 
   const markdown = renderPost(fields);
@@ -154,6 +181,7 @@ export async function createPost(
   const sha = await github.getDefaultSha();
   await github.createBranch(branch, sha);
   await github.putFile(postPath(fields.slug), markdown, branch, `Add draft post: ${fields.slug}`);
+  await writeAuthorsFile(github, branch, authorsFile, authorsCatalog, authorsAdded);
 
   if (input.link_on_writing_index) {
     const index = await github.getFile(WRITING_INDEX_PATH, branch);
@@ -192,6 +220,7 @@ export async function createPost(
     pr_number: pull.number,
     branch,
     validation: validationReport(fields),
+    authors_added: authorsAdded,
     agent: `agent:${principal.principal}:${principal.agentName}`,
   };
 }
@@ -215,9 +244,17 @@ export async function updatePost(
     }
   }
 
-  const { fields, existing } = await validateUpdate(github, input, allowPublish);
+  const { fields, existing, authorsFile, authorsAdded, authorsCatalog } = await validateUpdate(
+    github,
+    input,
+    allowPublish,
+  );
   if (input.dry_run) {
-    return { dry_run: true, validation: validationReport(fields) };
+    return {
+      dry_run: true,
+      validation: validationReport(fields),
+      authors_added: authorsAdded,
+    };
   }
 
   const markdown = renderPost(fields);
@@ -231,6 +268,7 @@ export async function updatePost(
     `Update post: ${fields.slug}`,
     existing.sha,
   );
+  await writeAuthorsFile(github, branch, authorsFile, authorsCatalog, authorsAdded);
 
   if (input.link_on_writing_index) {
     const index = await github.getFile(WRITING_INDEX_PATH, branch);
@@ -269,6 +307,30 @@ export async function updatePost(
     pr_number: pull.number,
     branch,
     validation: validationReport(fields),
+    authors_added: authorsAdded,
     agent: `agent:${principal.principal}:${principal.agentName}`,
   };
+}
+
+async function writeAuthorsFile(
+  github: GitHubClient,
+  branch: string,
+  authorsFile: { content: string; sha: string },
+  catalog: AuthorInfo[],
+  added: AuthorInfo[],
+) {
+  if (!added.length) {
+    return;
+  }
+  const next = renderAuthorsYaml(catalog);
+  if (next === authorsFile.content) {
+    return;
+  }
+  await github.putFile(
+    AUTHORS_PATH,
+    next,
+    branch,
+    `Add author${added.length === 1 ? "" : "s"} from GitHub: ${added.map((author) => author.id).join(", ")}`,
+    authorsFile.sha,
+  );
 }

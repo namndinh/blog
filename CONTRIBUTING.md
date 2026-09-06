@@ -20,7 +20,7 @@ uv run mkdocs serve
 2. Copy the frontmatter from [AGENTS.md](./AGENTS.md).
 3. Put `<!-- more -->` after the excerpt.
 4. Link the post from `docs/writing/index.md` if it should appear on Writing.
-5. New authors: add an entry to `docs/writing/.authors.yml`.
+5. New authors: use a GitHub username in `authors`. MCP writes name, avatar, and profile URL into `docs/writing/.authors.yml`. You can also add that file by hand.
 
 Every published page has **Edit this page**, which opens the file on GitHub.
 

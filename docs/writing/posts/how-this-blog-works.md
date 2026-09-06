@@ -54,7 +54,9 @@ tags:
 
 3. Write an `#` title, then an excerpt, then `<!-- more -->`, then the rest.
 4. Link the post from `docs/writing/index.md` if it should show on the Writing page.
-5. If you are a new author, add yourself to `docs/writing/.authors.yml`.
+5. If you are a new author, use your GitHub username in `authors`. MCP
+   copies name, avatar, and profile URL into `docs/writing/.authors.yml`.
+   You can also add that file by hand.
 
 ## Propose a draft through MCP
 

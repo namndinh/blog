@@ -29,7 +29,7 @@
     },
     {
       "name": "list_authors",
-      "description": "List author ids from docs/writing/.authors.yml.",
+      "description": "List authors from .authors.yml, including GitHub name, avatar, and profile URL.",
       "auth": "none"
     },
     {
@@ -40,7 +40,7 @@
     },
     {
       "name": "create_post",
-      "description": "Create a draft post and open a GitHub pull request. Always draft: true.",
+      "description": "Create a draft post and open a GitHub pull request. Always draft: true. New authors may be GitHub usernames; their profile is written to .authors.yml.",
       "auth": "bearer",
       "scopes": ["posts:create"]
     },

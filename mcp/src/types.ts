@@ -59,5 +59,14 @@ export interface AuthorInfo {
   id: string;
   name: string;
   description?: string;
+  avatar?: string;
   url?: string;
+}
+
+export interface GitHubUserProfile {
+  login: string;
+  name: string | null;
+  avatar_url: string;
+  html_url: string;
+  bio: string | null;
 }

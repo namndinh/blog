@@ -110,7 +110,7 @@ export function createServer(ctx: ServerContext): McpServer {
 
   server.tool(
     "list_authors",
-    "List author ids from docs/writing/.authors.yml. Public. Use these ids in create_post authors.",
+    "List authors from docs/writing/.authors.yml, including GitHub name, avatar, and profile URL. Public. create_post also accepts a GitHub username and will add the profile.",
     {},
     async () => run("list_authors", () => listAuthors(github)),
   );
@@ -132,17 +132,25 @@ export function createServer(ctx: ServerContext): McpServer {
         const principal = requireScope(ctx.principal, "posts:create");
         const allowPublish = principal.scopes.includes("posts:publish");
         if ((input.mode ?? "create") === "update") {
-          const { fields } = await validateUpdate(github, input, allowPublish);
-          return { dry_run: true, validation: validationReport(fields) };
+          const { fields, authorsAdded } = await validateUpdate(github, input, allowPublish);
+          return {
+            dry_run: true,
+            validation: validationReport(fields),
+            authors_added: authorsAdded,
+          };
         }
-        const fields = await validateCreate(github, input, allowPublish);
-        return { dry_run: true, validation: validationReport(fields) };
+        const { fields, authorsAdded } = await validateCreate(github, input, allowPublish);
+        return {
+          dry_run: true,
+          validation: validationReport(fields),
+          authors_added: authorsAdded,
+        };
       }),
   );
 
   server.tool(
     "create_post",
-    "Create a draft blog post and open a GitHub pull request. Forces draft: true. Requires posts:create.",
+    "Create a draft blog post and open a GitHub pull request. Forces draft: true. authors may be existing ids or GitHub usernames; new usernames are added to .authors.yml from the public GitHub profile. Requires posts:create.",
     createSchema,
     async (input) =>
       run("create_post", () => {
