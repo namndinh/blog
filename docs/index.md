@@ -8,4 +8,6 @@ or add a post, clone the repo and open a pull request.
 
 ## Start here
 
+- [The Human + Agent Ready Checklist](writing/posts/the-human-agent-ready-checklist.md) —
+  seven checks for whether an agent can find you, see you, and act
 - [How this blog works](writing/posts/how-this-blog-works.md) — clone, write a Markdown file, send a PR

@@ -10,6 +10,7 @@ and open a pull request.
 ## Writing
 
 - [Writing](https://namndinh.github.io/blog/writing/): post index
+- [The Human + Agent Ready Checklist](https://namndinh.github.io/blog/writing/2026/09/06/the-human-agent-ready-checklist/): seven checks for agent-ready products
 - [How this blog works](https://namndinh.github.io/blog/writing/2026/09/06/how-this-blog-works/): how to clone the repo and contribute
 - [RSS of new posts](https://namndinh.github.io/blog/feed_rss_created.xml)
 - [RSS of updated posts](https://namndinh.github.io/blog/feed_rss_updated.xml)
