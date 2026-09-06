@@ -111,6 +111,10 @@ not_in_nav: |
 hooks:
   - hooks/seo.py
 plugins:
+  - social:
+      cards_layout_options:
+        background_color: "#103dc2"
+        color: "#ffffff"
   - rss:
       match_path: "writing/posts/.*"
       feed_ttl: 1440

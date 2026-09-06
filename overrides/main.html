@@ -32,14 +32,8 @@
       {% set ns.author_url = page.authors[0].url %}
     {% endif %}
   {% endif %}
+  {# Open Graph / Twitter title, description, and image tags come from the social plugin. #}
   <meta property="og:site_name" content="{{ config.site_name }}">
-  <meta property="og:title" content="{{ ns.title }}">
-  <meta property="og:description" content="{{ ns.description }}">
-  <meta property="og:url" content="{{ ns.url }}">
-  <meta property="og:type" content="{{ 'article' if ns.is_post else 'website' }}">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="{{ ns.title }}">
-  <meta name="twitter:description" content="{{ ns.description }}">
   {% if ns.is_post %}
   <script type="application/ld+json">
   {

@@ -16,7 +16,7 @@ categories:
   - Notes
 comments: false
 date: YYYY-MM-DD
-description: One or two sentences.
+description: One or two sentences for the social card and RSS.
 draft: false
 slug: url-friendly-slug
 tags:
@@ -24,7 +24,7 @@ tags:
 ---
 ```
 
-Then an `#` title, an excerpt, `<!-- more -->`, and the rest of the post.
+Then an `#` title (social-card headline), an excerpt, `<!-- more -->`, and the rest of the post.
 
 New authors must be added to `docs/writing/.authors.yml` before they appear
 in `authors`.

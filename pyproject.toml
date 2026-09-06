@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Nam's personal blog"
 requires-python = ">=3.9"
 dependencies = [
-    "mkdocs-material>=9.6.14",
+    "mkdocs-material[imaging]>=9.6.14",
     "mkdocs-minify-plugin>=0.8.0",
     "mkdocs-rss-plugin>=1.17.4",
 ]
