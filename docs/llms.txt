@@ -9,17 +9,17 @@ and open a pull request.
 
 ## Writing
 
-- [Writing](https://namndinh.github.io/blog/writing/): post index
-- [The Human + Agent Ready Checklist](https://namndinh.github.io/blog/writing/2026/09/06/the-human-agent-ready-checklist/): seven checks for agent-ready products
-- [How this blog works](https://namndinh.github.io/blog/writing/2026/09/06/how-this-blog-works/): how to clone the repo and contribute
-- [RSS of new posts](https://namndinh.github.io/blog/feed_rss_created.xml)
-- [RSS of updated posts](https://namndinh.github.io/blog/feed_rss_updated.xml)
+- [Writing](https://namdinh.xyz/writing/): post index
+- [The Human + Agent Ready Checklist](https://namdinh.xyz/writing/2026/09/06/the-human-agent-ready-checklist/): seven checks for agent-ready products
+- [How this blog works](https://namdinh.xyz/writing/2026/09/06/how-this-blog-works/): how to clone the repo and contribute
+- [RSS of new posts](https://namdinh.xyz/feed_rss_created.xml)
+- [RSS of updated posts](https://namdinh.xyz/feed_rss_updated.xml)
 
 ## For agents
 
-- [Search index](https://namndinh.github.io/blog/search/search_index.json): JSON documents for full-text search
-- [Agent manifest](https://namndinh.github.io/blog/api/agent-manifest.json): feeds, search index, no MCP
-- [Sitemap](https://namndinh.github.io/blog/sitemap.xml)
+- [Search index](https://namdinh.xyz/search/search_index.json): JSON documents for full-text search
+- [Agent manifest](https://namdinh.xyz/api/agent-manifest.json): feeds, search index, no MCP
+- [Sitemap](https://namdinh.xyz/sitemap.xml)
 - [Source](https://github.com/namndinh/blog/)
 
 This site is read-only. There is no login, checkout, or MCP server. Fetch
