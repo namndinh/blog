@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://namndinh.github.io/blog/sitemap.xml
+Sitemap: https://namdinh.xyz/sitemap.xml

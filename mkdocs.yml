@@ -4,7 +4,7 @@ site_description: >-
   Personal notes and writing.
 repo_name: blog
 repo_url: https://github.com/namndinh/blog/
-site_url: https://namndinh.github.io/blog/
+site_url: https://namdinh.xyz/
 edit_uri: edit/main/docs/
 theme:
   name: material

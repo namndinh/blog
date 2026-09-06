@@ -1,32 +1,32 @@
 {
   "name": "Nam",
   "description": "Personal notes and writing. A static Markdown blog with no CMS.",
-  "url": "https://namndinh.github.io/blog/",
-  "llms_txt": "https://namndinh.github.io/blog/llms.txt",
+  "url": "https://namdinh.xyz/",
+  "llms_txt": "https://namdinh.xyz/llms.txt",
   "mcp": null,
   "feeds": [
     {
       "type": "application/rss+xml",
       "rel": "created",
-      "url": "https://namndinh.github.io/blog/feed_rss_created.xml"
+      "url": "https://namdinh.xyz/feed_rss_created.xml"
     },
     {
       "type": "application/rss+xml",
       "rel": "updated",
-      "url": "https://namndinh.github.io/blog/feed_rss_updated.xml"
+      "url": "https://namdinh.xyz/feed_rss_updated.xml"
     }
   ],
   "tools": [
     {
       "name": "search",
       "description": "Full-text search over published pages. GET the JSON index and query it locally.",
-      "url": "https://namndinh.github.io/blog/search/search_index.json",
+      "url": "https://namdinh.xyz/search/search_index.json",
       "method": "GET"
     },
     {
       "name": "get_details",
       "description": "Fetch a page, RSS item, or Markdown source by URL. Pages are static HTML.",
-      "url": "https://namndinh.github.io/blog/",
+      "url": "https://namdinh.xyz/",
       "method": "GET"
     }
   ],
