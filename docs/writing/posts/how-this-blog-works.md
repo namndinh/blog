@@ -44,7 +44,7 @@ categories:
   - Notes
 comments: false
 date: 2026-09-06
-description: One or two sentences for the preview and RSS feed.
+description: One or two sentences for the social card, preview, and RSS feed.
 draft: false
 slug: your-slug
 tags:
@@ -53,6 +53,8 @@ tags:
 ```
 
 3. Write an `#` title, then an excerpt, then `<!-- more -->`, then the rest.
+   The `#` title and `description` become the social-card thumbnail when a
+   link is shared (Open Graph / X / Discord).
 4. Link the post from `docs/writing/index.md` if it should show on the Writing page.
 5. If you are a new author, use your GitHub username in `authors`. MCP
    copies name, avatar, and profile URL into `docs/writing/.authors.yml`.

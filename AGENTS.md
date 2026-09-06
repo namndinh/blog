@@ -3,6 +3,7 @@
 - Content lives in `docs/`.
 - Blog posts live in `docs/writing/posts/`.
 - New posts need frontmatter: `authors`, `categories`, `comments`, `date`, `description`, `draft`, `slug`, `tags`.
+- `description` is the Open Graph / social-card subtitle (keep it to one or two sentences). The `#` title is the card headline.
 - Default new posts to `draft: false` unless asked for a draft.
 - Use `<!-- more -->` for the excerpt break.
 - Link noteworthy posts from `docs/writing/index.md`.
