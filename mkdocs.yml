@@ -66,6 +66,7 @@ markdown_extensions:
   - md_in_html
   - toc:
       permalink: true
+      permalink_title: Link to this section
   - pymdownx.betterem:
       smart_enable: all
   - pymdownx.caret
@@ -105,6 +106,10 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Writing: writing/index.md
+not_in_nav: |
+  404.md
+hooks:
+  - hooks/seo.py
 plugins:
   - rss:
       match_path: "writing/posts/.*"
@@ -133,10 +138,13 @@ extra:
   social:
     - icon: fontawesome/solid/rss
       link: feed_rss_created.xml
+      name: RSS
     - icon: fontawesome/brands/github
       link: https://github.com/namndinh
+      name: GitHub
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/in/namnhutdinh/
+      name: LinkedIn
 extra_css:
   - stylesheets/extra.css
 extra_javascript:

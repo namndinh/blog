@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block announce %}
+{% endblock %}
+
+{% block extrahead %}
+  {% set ns = namespace(
+    title=config.site_name,
+    description=config.site_description,
+    url=config.site_url,
+    is_post=false,
+    author_name=config.site_author or config.site_name,
+    author_url=config.repo_url
+  ) %}
+  {% if page and page.meta and page.meta.title %}
+    {% set ns.title = page.meta.title %}
+  {% elif page and page.title and not page.is_homepage %}
+    {% set ns.title = page.title | striptags %}
+  {% endif %}
+  {% if page and page.meta and page.meta.description %}
+    {% set ns.description = page.meta.description %}
+  {% endif %}
+  {% if page and page.canonical_url %}
+    {% set ns.url = page.canonical_url %}
+  {% endif %}
+  {% if page and page.meta and page.meta.slug and page.meta.date %}
+    {% set ns.is_post = true %}
+  {% endif %}
+  {% if page and page.authors %}
+    {% set ns.author_name = page.authors[0].name %}
+    {% if page.authors[0].url %}
+      {% set ns.author_url = page.authors[0].url %}
+    {% endif %}
+  {% endif %}
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  <meta property="og:title" content="{{ ns.title }}">
+  <meta property="og:description" content="{{ ns.description }}">
+  <meta property="og:url" content="{{ ns.url }}">
+  <meta property="og:type" content="{{ 'article' if ns.is_post else 'website' }}">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{ ns.title }}">
+  <meta name="twitter:description" content="{{ ns.description }}">
+  {% if ns.is_post %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": {{ ns.title | tojson }},
+    "description": {{ ns.description | tojson }},
+    "datePublished": {{ page.meta.date | string | tojson }},
+    "author": {
+      "@type": "Person",
+      "name": {{ ns.author_name | tojson }},
+      "url": {{ ns.author_url | tojson }}
+    },
+    "url": {{ ns.url | tojson }},
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": {{ ns.url | tojson }}
+    }
+  }
+  </script>
+  {% else %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": {{ config.site_name | tojson }},
+    "description": {{ ns.description | tojson }},
+    "url": {{ ns.url | tojson }},
+    "author": {
+      "@type": "Person",
+      "name": {{ ns.author_name | tojson }},
+      "url": {{ ns.author_url | tojson }}
+    }
+  }
+  </script>
+  {% endif %}
+{% endblock %}

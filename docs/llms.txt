@@ -1,0 +1,25 @@
+# Nam
+
+> Personal notes and writing.
+
+This is Nam's Markdown blog. There is no CMS and no write API. Pages are
+static HTML built with Material for MkDocs. The source is Markdown in
+https://github.com/namndinh/blog/. To add or fix a page, clone the repo
+and open a pull request.
+
+## Writing
+
+- [Writing](https://namndinh.github.io/blog/writing/): post index
+- [How this blog works](https://namndinh.github.io/blog/writing/2026/09/06/how-this-blog-works/): how to clone the repo and contribute
+- [RSS of new posts](https://namndinh.github.io/blog/feed_rss_created.xml)
+- [RSS of updated posts](https://namndinh.github.io/blog/feed_rss_updated.xml)
+
+## For agents
+
+- [Search index](https://namndinh.github.io/blog/search/search_index.json): JSON documents for full-text search
+- [Agent manifest](https://namndinh.github.io/blog/api/agent-manifest.json): feeds, search index, no MCP
+- [Sitemap](https://namndinh.github.io/blog/sitemap.xml)
+- [Source](https://github.com/namndinh/blog/)
+
+This site is read-only. There is no login, checkout, or MCP server. Fetch
+pages and the search index over HTTPS. To publish, open a GitHub pull request.

@@ -1,0 +1,30 @@
+{% extends "main.html" %}
+
+{% block htmltitle %}
+  <title>Page not found - {{ config.site_name }}</title>
+{% endblock %}
+
+{% block extrahead %}
+  {{ super() }}
+  <meta name="robots" content="noindex">
+{% endblock %}
+
+{% block content %}
+  {% set found = namespace(page=None) %}
+  {% for file in pages %}
+    {% if file.src_uri == "404.md" %}
+      {% set found.page = file.page %}
+    {% endif %}
+  {% endfor %}
+  {% if found.page and found.page.content %}
+    {{ found.page.content }}
+  {% else %}
+    <h1>404 — Page not found</h1>
+    <p>That URL is not on this site.</p>
+    <ul>
+      <li><a href="{{ config.site_url }}">Home</a></li>
+      <li><a href="{{ 'writing/' | url }}">Writing</a></li>
+      <li><a href="https://github.com/namndinh/blog/issues/new">Open an issue</a></li>
+    </ul>
+  {% endif %}
+{% endblock %}
