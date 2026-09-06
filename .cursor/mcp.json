@@ -1,5 +1,8 @@
 {
   "mcpServers": {
+    "nam-blog": {
+      "url": "https://nam-blog-mcp.namnhutdinh.workers.dev/mcp"
+    },
     "cloudflare": {
       "url": "https://mcp.cloudflare.com/mcp"
     },
