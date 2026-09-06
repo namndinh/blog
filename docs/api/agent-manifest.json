@@ -1,19 +1,19 @@
 {
   "name": "Nam",
   "description": "Personal notes and writing. A static Markdown blog. Public MCP read tools; writes open draft GitHub pull requests.",
-  "url": "https://namndinh.github.io/blog/",
-  "llms_txt": "https://namndinh.github.io/blog/llms.txt",
+  "url": "https://namdinh.xyz/",
+  "llms_txt": "https://namdinh.xyz/llms.txt",
   "mcp": "https://nam-blog-mcp.namnhutdinh.workers.dev/mcp",
   "feeds": [
     {
       "type": "application/rss+xml",
       "rel": "created",
-      "url": "https://namndinh.github.io/blog/feed_rss_created.xml"
+      "url": "https://namdinh.xyz/feed_rss_created.xml"
     },
     {
       "type": "application/rss+xml",
       "rel": "updated",
-      "url": "https://namndinh.github.io/blog/feed_rss_updated.xml"
+      "url": "https://namdinh.xyz/feed_rss_updated.xml"
     }
   ],
   "tools": [
