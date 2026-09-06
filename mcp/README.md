@@ -19,6 +19,8 @@ npx wrangler deploy
 
 `GITHUB_TOKEN` needs Contents and Pull requests on `namndinh/blog`. Public `search`, `get_details`, and `list_authors` work without it. `MCP_TOKENS` is a JSON array of hashed records from `npm run token`.
 
+`create_post` / `update_post` accept an existing author id or a GitHub username. Unknown usernames are resolved against the public GitHub profile and appended to `docs/writing/.authors.yml` on the draft PR (name, avatar, profile URL).
+
 ## Local
 
 ```bash
