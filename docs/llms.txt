@@ -10,7 +10,7 @@ and open a pull request.
 ## Writing
 
 - [Writing](https://namdinh.xyz/writing/): post index
-- [The Human + Agent Ready Checklist](https://namdinh.xyz/writing/2026/09/06/the-human-agent-ready-checklist/): seven checks for agent-ready products
+- [The "AI agent as a user" checklist](https://namdinh.xyz/writing/2026/09/06/the-human-agent-ready-checklist/): seven places the second user hits a wall
 - [How this blog works](https://namdinh.xyz/writing/2026/09/06/how-this-blog-works/): how to clone the repo and contribute
 - [RSS of new posts](https://namdinh.xyz/feed_rss_created.xml)
 - [RSS of updated posts](https://namdinh.xyz/feed_rss_updated.xml)

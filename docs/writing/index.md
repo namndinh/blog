@@ -10,6 +10,6 @@ here if you want it on this page.
 
 ## Start here
 
-- [The Human + Agent Ready Checklist](./posts/the-human-agent-ready-checklist.md) —
-  seven checks for whether an agent can find you, see you, and act
+- [The "AI agent as a user" checklist](./posts/the-human-agent-ready-checklist.md) —
+  seven places the second user hits a wall, and why the fixes are not agent-specific
 - [How this blog works](./posts/how-this-blog-works.md) — how to clone the repo and contribute

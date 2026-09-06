@@ -5,8 +5,8 @@ categories:
   - Notes
 comments: false
 date: 2026-09-06
-description: Seven checks for whether an agent can find you, see you, act without
-  breaking things, and leave the human in charge.
+description: Seven places the second user — an AI agent — hits a wall, and
+  why almost none of the fixes are agent-specific work.
 draft: false
 slug: the-human-agent-ready-checklist
 tags:
@@ -15,125 +15,97 @@ tags:
   - apis
 ---
 
-# The Human + Agent Ready Checklist
+# The "AI agent as a user" checklist
 
-Score yourself. 0 means the surface is human-only. 1 means it is fixed for
-agents.
+Our products now have a second user. It arrives through the same URLs, hits
+the same endpoints, and fails in ways your analytics were never built to show
+you. This checklist is seven places that second user hits a wall, roughly in
+the order it hits them.
 
 <!-- more -->
 
+## But our agent traffic is ~1%
+
+Fair. Mine too, on most properties. Two things make me keep working on it
+anyway.
+
+The first is that 0.3% is a measurement of how many agents got far enough to
+be counted. If discovery fails, the agent never shows up in your logs at all.
+You are not measuring demand, you are measuring the survivors.
+
+The second is that almost nothing on this list is agent-specific work.
+Semantic HTML, idempotency keys, machine readable errors, scoped tokens,
+per-client rate limits: this is the backlog your senior engineers have been
+quietly asking for since 2019. Agents just removed your excuse for not doing
+it.
+
 ## 1. Discovery: can an agent find you?
 
-- `llms.txt` at root, with a plain-English description of what your product
+- `llms.txt` at root, with a plain English description of what your product
   does, plus links to docs and your MCP endpoint
 - `/api/agent-manifest.json` listing your MCP server URL, tools, rate limits,
   and pricing
-- A live MCP server exposing at least three tools: search, get_details,
-  create/update. Every NLWeb instance also acts as an MCP server, publishing
-  your content and query interface to the agent ecosystem
-- Traditional SEO still working. Sitemap, structured data, canonical URLs.
-  Agents still fall back to crawling
-
-The cheap win here is `llms.txt`. It takes an afternoon and costs nothing. The
-manifest and the MCP server are the real work, and they are what determine
-whether an agent treats you as a capability or as a page to scrape.
+- A live MCP server
+- Traditional SEO still working because agents still fall back to crawling
 
 ## 2. Interface semantics: can an agent see you?
 
-This is the number one failure mode in 2026, and it is the section people skip
-because it feels like an accessibility chore rather than a product problem.
-
-- No div soup. Every interactive element is a `<button>`, `<a>`, `<input>`,
-  `<select>`, or `<label>`. Native elements like `<button>`, `<label>`,
-  `<nav>`, and `<main>` build a useful accessibility tree for free
-- Labels are linked. Every input has `<label for="id">`. Browser-agent UX
-  fails without it
-- Accessibility tree audit passes. Run `page.accessibility.snapshot()`. That
-  is what browser-use, the 85k-star open-source agent framework, calls as its
-  primary observation method. If it comes back empty, agents are blind
-- Tested with Playwright MCP. Microsoft Playwright MCP reads the accessibility
-  tree rather than taking pixel-based input. OpenAI Atlas, Playwright MCP, and
-  Perplexity's Comet all rely on accessibility data
-- No visual-only state. Loading, error, and success live in DOM text, not in a
-  color change or a toast that vanishes after three seconds
-
-The accessibility tree is the literal interface AI agents use to understand
-your website. Not your design system. Not your hero image. A stripped-down
-structural model that has powered screen readers for twenty years and that
-most teams have never opened.
-
-Run the snapshot on your checkout page right now. I have watched more than one
-team go quiet when they saw the result.
+- No div soup because native elements build a useful accessibility tree for
+  free
+- Labels are linked because browser agent UX fails without it
+- Accessibility tree audit passes
+- Tested with Playwright MCP
+- No visual only state
 
 ## 3. Actions and APIs: can an agent act without breaking things?
 
-- Every UI action has a matching API or MCP tool. Agents consume APIs,
-  schemas, and structured models. They do not consume tooltips and dashboards
-- Idempotency keys on all create actions. `Idempotency-Key: agent_request_123`
-  is what stops a retry loop from placing four orders
-- Machine-readable errors. JSON with `code`, `message`, `retryable`,
-  `retry_after`. Not "Something went wrong"
-- Deterministic selectors. `data-testid="checkout-pay-button"` that survives a
-  redesign
-- No CAPTCHA for agents. Humans get the CAPTCHA. Agents get a signed token or
-  a proof-of-work endpoint
-
-Idempotency is the one I would fight for hardest. Humans double-click and feel
-embarrassed. Agents retry on a timer, and they do not feel anything at all.
+- Every UI action has a matching API or MCP tool
+- Idempotency keys on all create actions e.g.
+  `Idempotency-Key: agent_request_123` is what stops a retry loop from
+  placing four orders
+- Machine readable errors. JSON with clear schema. Not "Something went wrong"
+- Deterministic selectors.
+- No CAPTCHA for agents
 
 ## 4. Auth and permissions: who is the agent acting as?
 
-- Separate agent identity. The agent authenticates as
-  `agent:{user_id}:{agent_name}`, not as the human
-- Scoped, short-lived tokens. `orders:read`, `orders:create`. Never `*:*`.
-  Someone has to own token lifecycle, or agents accumulate permissions the way
-  shared service accounts always have
-- Categorised agent types. Personal agents belong to one user.
-  Organisational agents are shared and effectively ownerless, which makes them
-  the highest-risk category, and they should require owner approval
-- Revocation UI. A human can see "3 agents have access" and kill any of them
-  in one click
-
-If your answer to "who did this" is the human's user ID, you have no audit
-trail. You have a story.
+- Separate agent identity
+- Scoped, short lived tokens
+- Categorized agent types
+- Revocation UI
 
 ## 5. Trust, control and transparency: is the human still in charge?
 
-- The agent identifies itself in every user-facing log. "Perplexity Comet
-  booked this for you"
-- Confirmation gate on high-stakes actions. Agents should say plainly that
-  they are AI, cite where information came from, ask before doing anything
-  expensive or irreversible, and hand off to a human when they are stuck
-- User-visible summary before execution. "I will book flight X for $420", with
-  one-click undo
+- The agent identifies itself in every user facing log
+- Confirmation gate on high stakes actions
+- User visible summary before execution
 - Citations and provenance in agent output
-- A handoff protocol. When the agent fails, it passes the transcript and
+- A handoff protocol i.e. when the agent fails, it passes the transcript and
   context to human support instead of saying "I can't help with that"
-
-This section is also your legal surface. An agent taking consequential action
-with no visible trail is a governance problem before it is a UX problem, and
-the people who will care about it are not on your product team.
 
 ## 6. Resilience and ops: what happens when agents hammer you?
 
-- Separate rate limits. Humans at 60 rpm, agents at 600 rpm, metered and
+- Separate rate limits e.g. humans at 60 rpm, agents at 600 rpm, metered and
   billed
-- An agent traffic dashboard. You can see what share of traffic comes from
-  Operator, Claude computer use, and Comet
-- No breaking UI changes without an API version bump. A frontend redesign
-  should not take your MCP tools down
-- Shadow mode. You can run agent traffic dry and see what it would have done
-
-Most teams discover their agent traffic mix during an incident. That is a bad
-time to build the dashboard.
+- An agent traffic dashboard
+- No breaking UI changes without an API version bump
+- Shadow mode so you can run agent traffic dry and see what it would have
+  done
 
 ## 7. Metrics: are you measuring the second user at all?
 
-- Agent success rate per flow (search, add, checkout), tracked separately from
-  human conversion
-- Time to first tool call. How fast can a brand new agent get from discovery
-  to a successful action?
-- Agent-initiated revenue. Actual dollars attributed to agent users
+- Agent success rate per flow
+- Time to first tool call
+- Agent initiated outcomes
 
-If agent conversion is folded into your human funnel, you cannot see the
-failure. You will see a slightly worse number and blame the redesign.
+## Cheap wins and real work
+
+| Section                 | Cheap win                                                                                   | Real work                                                                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Discovery            | `llms.txt`. An afternoon, no budget, no ticket                                              | The manifest and the MCP server. These decide whether an agent treats you as a capability or as a page to scrape                              |
+| 2. Interface semantics  | Linking labels to inputs. Find and replace, plus an afternoon of QA                         | Unpicking div soup in a mature component library, where half the buttons are styled `<div>`s because a designer wanted a hover state in 2021  |
+| 3. Actions and APIs     | Structured error bodies. Your API already knows what went wrong, it is just refusing to say | Idempotency. It needs a key store, a replay policy, and a decision on how long you honour a key                                               |
+| 4. Auth and permissions | Scoping the tokens you already issue. You probably have three permissions that matter       | The identity model. It changes your data model and is nearly impossible to retrofit once agent sessions look like human ones in your database |
+| 5. Trust and control    | Naming the agent in the order confirmation email. One string                                | The confirmation gate. Someone has to define high stakes, and that argument goes to legal                                                     |
+| 6. Resilience and ops   | Splitting the rate limit bucket. Your gateway supports this today                           | Shadow mode. A real engineering project, and the most useful thing on this list once you have it                                              |
+| 7. Metrics              | One boolean on the session record marking agent traffic. Everything else follows from it    | Revenue attribution, once agents act for organisations rather than individuals and the buyer is no longer a person                            |
