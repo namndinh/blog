@@ -66,6 +66,9 @@ export class GitHubClient {
   }
 
   async getFile(path: string, ref?: string): Promise<GitHubFile> {
+    if (!this.token) {
+      return this.getPublicFile(path, ref);
+    }
     const branch = ref ?? this.defaultBranch;
     const encoded = path.split("/").map(encodeURIComponent).join("/");
     const data = await this.request<{
@@ -82,6 +85,30 @@ export class GitHubClient {
     };
   }
 
+  private async getPublicFile(path: string, ref?: string): Promise<GitHubFile> {
+    const branch = ref ?? this.defaultBranch;
+    const encoded = path.split("/").map(encodeURIComponent).join("/");
+    const url = `https://raw.githubusercontent.com/${this.repo}/${encodeURIComponent(branch)}/${encoded}`;
+    const response = await this.fetchImpl(url, {
+      headers: { "User-Agent": "nam-blog-mcp" },
+    });
+    if (response.status === 404) {
+      throw new BlogError("not_found", `GitHub path not found: ${path}`);
+    }
+    if (!response.ok) {
+      throw new BlogError(
+        "github_error",
+        `GitHub raw ${response.status} for ${path}`,
+        response.status >= 500,
+      );
+    }
+    return {
+      path,
+      sha: "",
+      content: await response.text(),
+    };
+  }
+
   async fileExists(path: string, ref?: string): Promise<boolean> {
     try {
       await this.getFile(path, ref);
@@ -95,6 +122,7 @@ export class GitHubClient {
   }
 
   async getDefaultSha(): Promise<string> {
+    this.requireWriteToken();
     const data = await this.request<{ object: { sha: string } }>(
       `/repos/${this.repo}/git/ref/heads/${this.defaultBranch}`,
     );
@@ -102,6 +130,7 @@ export class GitHubClient {
   }
 
   async createBranch(name: string, sha: string): Promise<void> {
+    this.requireWriteToken();
     await this.request(`/repos/${this.repo}/git/refs`, {
       method: "POST",
       body: JSON.stringify({ ref: `refs/heads/${name}`, sha }),
@@ -115,6 +144,7 @@ export class GitHubClient {
     message: string,
     sha?: string,
   ): Promise<void> {
+    this.requireWriteToken();
     const encoded = path.split("/").map(encodeURIComponent).join("/");
     await this.request(`/repos/${this.repo}/contents/${encoded}`, {
       method: "PUT",
@@ -127,7 +157,17 @@ export class GitHubClient {
     });
   }
 
+  private requireWriteToken(): void {
+    if (!this.token) {
+      throw new BlogError(
+        "github_not_configured",
+        "GITHUB_TOKEN is not set on the Worker. Writes cannot open pull requests.",
+      );
+    }
+  }
+
   async createPullRequest(title: string, head: string, body: string): Promise<PullRequest> {
+    this.requireWriteToken();
     return this.request<PullRequest>(`/repos/${this.repo}/pulls`, {
       method: "POST",
       body: JSON.stringify({
@@ -140,6 +180,7 @@ export class GitHubClient {
   }
 
   async addLabels(issue: number, labels: string[]): Promise<void> {
+    this.requireWriteToken();
     await this.request(`/repos/${this.repo}/issues/${issue}/labels`, {
       method: "POST",
       body: JSON.stringify({ labels }),
@@ -147,6 +188,7 @@ export class GitHubClient {
   }
 
   async findIdempotentPull(fullHash: string): Promise<PullRequest | null> {
+    this.requireWriteToken();
     const short = shortIdempotency(fullHash);
     const issues = await this.request<Array<{ number: number; pull_request?: unknown }>>(
       `/repos/${this.repo}/issues?state=open&labels=${encodeURIComponent(`mcp,idemp-${short}`)}&per_page=20`,

@@ -17,7 +17,7 @@ npx wrangler secret put MCP_TOKENS
 npx wrangler deploy
 ```
 
-`GITHUB_TOKEN` needs Contents and Pull requests on `namndinh/blog`. `MCP_TOKENS` is a JSON array of hashed records from `npm run token`.
+`GITHUB_TOKEN` needs Contents and Pull requests on `namndinh/blog`. Public `search`, `get_details`, and `list_authors` work without it. `MCP_TOKENS` is a JSON array of hashed records from `npm run token`.
 
 ## Local
 
