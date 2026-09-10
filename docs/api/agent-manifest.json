@@ -1,9 +1,14 @@
 {
   "name": "Nam",
-  "description": "Personal notes and writing. A static Markdown blog. Public MCP read tools; writes open draft GitHub pull requests.",
+  "description": "Personal notes and writing. A static Markdown blog. Public MCP read tools; writes open draft GitHub pull requests. In-page WebMCP tools for browser agents.",
   "url": "https://namdinh.xyz/",
   "llms_txt": "https://namdinh.xyz/llms.txt",
   "mcp": "https://nam-blog-mcp.namnhutdinh.workers.dev/mcp",
+  "webmcp": {
+    "status": "v1",
+    "api": "document.modelContext",
+    "notes": "Progressive enhancement. Register tools when WebMCP is available (Chrome origin trial / local flag). Read-only; writes stay on remote MCP."
+  },
   "feeds": [
     {
       "type": "application/rss+xml",
@@ -20,41 +25,71 @@
     {
       "name": "search",
       "description": "Full-text search over published pages.",
-      "auth": "none"
+      "auth": "none",
+      "surface": "mcp"
     },
     {
       "name": "get_details",
       "description": "Fetch published Markdown by slug, path, or URL.",
-      "auth": "none"
+      "auth": "none",
+      "surface": "mcp"
     },
     {
       "name": "list_authors",
       "description": "List authors from .authors.yml, including GitHub name, avatar, and profile URL.",
-      "auth": "none"
+      "auth": "none",
+      "surface": "mcp"
     },
     {
       "name": "validate_post",
       "description": "Dry-run frontmatter and excerpt validation. No GitHub write.",
       "auth": "bearer",
-      "scopes": ["posts:create"]
+      "scopes": ["posts:create"],
+      "surface": "mcp"
     },
     {
       "name": "create_post",
       "description": "Create a draft post and open a GitHub pull request. Always draft: true. New authors may be GitHub usernames; their profile is written to .authors.yml.",
       "auth": "bearer",
-      "scopes": ["posts:create"]
+      "scopes": ["posts:create"],
+      "surface": "mcp"
     },
     {
       "name": "update_post",
       "description": "Update a post on a branch and open a pull request. draft: false requires posts:publish.",
       "auth": "bearer",
-      "scopes": ["posts:update"]
+      "scopes": ["posts:update"],
+      "surface": "mcp"
+    },
+    {
+      "name": "search_posts",
+      "description": "Full-text search over published pages. Returns title, url, and snippet.",
+      "auth": "none",
+      "surface": "webmcp"
+    },
+    {
+      "name": "get_current_page",
+      "description": "Title, URL, description, and main text of the open tab.",
+      "auth": "none",
+      "surface": "webmcp"
+    },
+    {
+      "name": "navigate_to",
+      "description": "Navigate this tab to a same-origin URL, path, or post slug.",
+      "auth": "none",
+      "surface": "webmcp"
+    },
+    {
+      "name": "list_recent_posts",
+      "description": "Recent posts from the created RSS feed.",
+      "auth": "none",
+      "surface": "webmcp"
     }
   ],
   "rate_limits": {
     "public": "60 requests per minute per IP",
     "write": "10 requests per minute per token",
-    "note": "Machine-readable errors use code, message, retryable, retry_after."
+    "note": "Machine-readable errors use code, message, retryable, retry_after. WebMCP tools run in the page and inherit normal browser fetch limits."
   },
   "pricing": "free"
 }

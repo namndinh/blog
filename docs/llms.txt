@@ -5,10 +5,13 @@
 This is Nam's Markdown blog. Pages are static HTML built with Material for
 MkDocs. The source is Markdown in https://github.com/namndinh/blog/.
 
-Public agents can search and fetch posts through the MCP server. Creating or
-updating a post requires a bearer token and opens a draft pull request. A
-human still merges and sets `draft: false` before anything goes live. You can
-also clone the repo and open a pull request yourself.
+Public agents can search and fetch posts through the remote MCP server.
+Browser agents on this site can also use WebMCP tools registered in-page
+(`search_posts`, `get_current_page`, `navigate_to`, `list_recent_posts`).
+Creating or updating a post requires a bearer token on the remote MCP and
+opens a draft pull request. A human still merges and sets `draft: false`
+before anything goes live. You can also clone the repo and open a pull
+request yourself.
 
 ## Writing
 
@@ -21,10 +24,12 @@ also clone the repo and open a pull request yourself.
 ## For agents
 
 - [Search index](https://namdinh.xyz/search/search_index.json): JSON documents for full-text search
-- [Agent manifest](https://namdinh.xyz/api/agent-manifest.json): feeds, search index, MCP
-- [MCP](https://nam-blog-mcp.namnhutdinh.workers.dev/mcp): public `search`, `get_details`, `list_authors`; writes need a token
+- [Agent manifest](https://namdinh.xyz/api/agent-manifest.json): feeds, search index, remote MCP, WebMCP
+- [Remote MCP](https://nam-blog-mcp.namnhutdinh.workers.dev/mcp): public `search`, `get_details`, `list_authors`; writes need a token
+- WebMCP (in-page, when the browser supports it): `search_posts`, `get_current_page`, `navigate_to`, `list_recent_posts`
 - [Sitemap](https://namdinh.xyz/sitemap.xml)
 - [Source](https://github.com/namndinh/blog/)
 
-Reads are public. Writes go through MCP as draft PRs, or through GitHub
-directly. There is no login or checkout on the site itself.
+Reads are public. Writes go through remote MCP as draft PRs, or through GitHub
+directly. There is no login or checkout on the site itself. WebMCP tools are
+read-only and only available while this origin is open in a supporting browser.

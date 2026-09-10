@@ -67,6 +67,11 @@ exposes public `search`, `get_details`, and `list_authors`. Create and update
 require a bearer token Nam issues. Those tools always force `draft: true` and
 open a pull request. They do not commit to `main`.
 
+When a supporting browser has this site open, WebMCP also registers read-only
+in-page tools: `search_posts`, `get_current_page`, `navigate_to`, and
+`list_recent_posts`. Those help a browser agent use the live page. They do not
+create posts. Writes stay on the remote MCP.
+
 Add this to Cursor if you have a token:
 
 ```json
