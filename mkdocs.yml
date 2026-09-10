@@ -139,6 +139,9 @@ plugins:
       post_url_format: "{date}/{slug}"
       authors_file: "{blog}/.authors.yml"
 extra:
+  analytics:
+    provider: google
+    property: G-RHQ9BSS4FY
   social:
     - icon: fontawesome/solid/rss
       link: feed_rss_created.xml
