@@ -1,0 +1,177 @@
+[data-md-color-scheme="youtube"] {
+  --md-primary-fg-color: #103dc2;
+  --md-primary-fg-color--light: #ecb7b7;
+  --md-primary-fg-color--dark: #103dc2;
+}
+
+.social-links {
+  font-size: 1rem;
+  margin: 1rem 0;
+}
+
+.social-links a {
+  text-decoration: none;
+}
+
+.md-content hr {
+  margin: 2.5rem 0;
+  border: none;
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Unlisted /reps tap counter. The page covers the blog chrome. */
+body:has(.reps) {
+  overflow: hidden;
+  background: #103dc2;
+}
+
+body:has(.reps) .md-header,
+body:has(.reps) .md-tabs,
+body:has(.reps) .md-footer,
+body:has(.reps) .md-sidebar,
+body:has(.reps) .md-top,
+body:has(.reps) .md-banner,
+body:has(.reps) .md-content__button {
+  display: none;
+}
+
+.reps {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #103dc2;
+  color: #ffffff;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  overscroll-behavior: none;
+}
+
+.reps-add {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0 1rem 5rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.reps-add:focus {
+  outline: none;
+}
+
+.reps-add:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: -8px;
+}
+
+.reps-count {
+  font-size: clamp(7rem, 42vw, 16rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.reps.is-hit .reps-count {
+  animation: reps-pop 180ms ease-out;
+}
+
+.reps-label {
+  font-size: 1.25rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.reps-note {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  margin: 0;
+  text-align: center;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.reps-actions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  pointer-events: none;
+}
+
+.reps-actions button {
+  pointer-events: auto;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.95rem;
+  touch-action: manipulation;
+}
+
+.reps-actions button.is-listening {
+  background: #ffffff;
+  color: #103dc2;
+  border-color: #ffffff;
+}
+
+.reps-actions button:disabled {
+  opacity: 0.35;
+}
+
+.reps-actions button:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+}
+
+@keyframes reps-pop {
+  from {
+    transform: scale(0.94);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reps.is-hit .reps-count {
+    animation: none;
+  }
+}
