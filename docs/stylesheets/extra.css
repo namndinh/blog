@@ -133,9 +133,10 @@ body:has(.reps) .md-content__button {
 
 .reps-actions button {
   pointer-events: auto;
-  min-width: 5.5rem;
+  flex: 1 1 0;
+  min-width: 0;
   min-height: 2.75rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.75rem;
   border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.12);
@@ -143,6 +144,12 @@ body:has(.reps) .md-content__button {
   font: inherit;
   font-size: 0.95rem;
   touch-action: manipulation;
+}
+
+.reps-actions button.is-listening {
+  background: #ffffff;
+  color: #103dc2;
+  border-color: #ffffff;
 }
 
 .reps-actions button:disabled {
