@@ -34,6 +34,12 @@
   {% endif %}
   {# Open Graph / Twitter title, description, and image tags come from the social plugin. #}
   <meta property="og:site_name" content="{{ config.site_name }}">
+  {% if page and page.meta and page.meta.robots %}
+  <meta name="robots" content="{{ page.meta.robots | e }}">
+  {% endif %}
+  {% if page and page.meta and page.meta.layout == "counter" %}
+  <meta name="theme-color" content="#103dc2">
+  {% endif %}
   {% if ns.is_post %}
   <script type="application/ld+json">
   {
