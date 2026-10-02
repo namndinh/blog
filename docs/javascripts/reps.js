@@ -1,6 +1,8 @@
 /**
  * Full-screen counter for /reps.
- * Tap the screen to add one, or say the count out loud: one, two, three.
+ * Tap to add one, or tap Listen and count out loud.
+ * Phones listen on-device for one through nine. Other browsers use the
+ * built-in speech recognizer, which can hear twenty, thirty, and so on.
  * The total stays in localStorage on this device.
  */
 (() => {
@@ -8,6 +10,11 @@
   const COOLDOWN_MS = 280;
   const RESET_ARM_MS = 2000;
   const MAX_COUNT = 999;
+  const HEARD_GAP_MS = 380;
+  const SAME_WORD_MS = 700;
+  const TFJS_URL = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
+  const SPEECH_COMMANDS_URL =
+    "https://cdn.jsdelivr.net/npm/@tensorflow-models/speech-commands@0.5.4/dist/speech-commands.min.js";
 
   const SMALL = {
     zero: 0,
@@ -47,6 +54,18 @@
     seventy: 70,
     eighty: 80,
     ninety: 90,
+  };
+
+  const DIGITS = {
+    one: 1,
+    two: 2,
+    three: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+    seven: 7,
+    eight: 8,
+    nine: 9,
   };
 
   function parseUnderHundred(tokens, index) {
@@ -120,11 +139,18 @@
     return numbers;
   }
 
+  function countFromHeardDigit(count, digit) {
+    if (!Number.isInteger(digit) || digit < 1 || digit > 9) return count;
+    if (count < digit) return digit;
+    return count + 1;
+  }
+
   /** @type {WakeLockSentinel | null} */
   let wakeLock = null;
 
   async function keepAwake() {
-    if (!document.getElementById("reps") || !navigator.wakeLock || wakeLock) return;
+    if (typeof document === "undefined" || !document.getElementById("reps")) return;
+    if (!navigator.wakeLock || wakeLock) return;
     try {
       wakeLock = await navigator.wakeLock.request("screen");
       wakeLock.addEventListener("release", () => {
@@ -164,6 +190,42 @@
     return window.SpeechRecognition || window.webkitSpeechRecognition || null;
   }
 
+  function isIOS() {
+    const ua = navigator.userAgent || "";
+    if (/iPad|iPhone|iPod/.test(ua)) return true;
+    return navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+  }
+
+  function isPhone() {
+    if (typeof window !== "undefined" && window.__repsForceOnDevice) return true;
+    if (isIOS()) return true;
+    return /Android|Mobile/i.test(navigator.userAgent || "");
+  }
+
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const existing = document.querySelector(`script[src="${src}"]`);
+      if (existing && existing.dataset.loaded === "1") {
+        resolve();
+        return;
+      }
+      if (existing) {
+        existing.addEventListener("load", () => resolve(), { once: true });
+        existing.addEventListener("error", () => reject(new Error("script")), { once: true });
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = src;
+      script.async = true;
+      script.onload = () => {
+        script.dataset.loaded = "1";
+        resolve();
+      };
+      script.onerror = () => reject(new Error("script"));
+      document.head.appendChild(script);
+    });
+  }
+
   function boot() {
     const root = document.getElementById("reps");
     if (!root || root.dataset.bound === "1") return;
@@ -183,11 +245,17 @@
     let resetArmed = false;
     let resetTimer = 0;
     let wantListen = false;
-    let listening = false;
+    let usingCloud = false;
     let heardNote = "";
     let statusNote = "";
+    let lastHeardAt = 0;
+    let lastHeardWord = "";
     /** @type {SpeechRecognition | null} */
     let recognition = null;
+    /** @type {Promise<any> | null} */
+    let recognizerPromise = null;
+    /** @type {any} */
+    let deviceRecognizer = null;
 
     function noteText() {
       if (statusNote) return statusNote;
@@ -223,20 +291,28 @@
       root.classList.add("is-hit");
     }
 
-    function applySpoken(transcript) {
-      const numbers = extractSpokenNumbers(transcript);
-      if (!numbers.length) return;
-      const spoken = numbers[numbers.length - 1];
-      heardNote = `Heard ${spoken}`;
+    function bumpFromSpeech(next, heard) {
+      heardNote = heard;
       statusNote = "";
-      if (spoken === count) {
+      if (next === count) {
         render();
         return;
       }
-      persist(spoken);
+      persist(next);
       flash();
       if (navigator.vibrate) navigator.vibrate(12);
       keepAwake();
+    }
+
+    function applyTranscript(transcript) {
+      const numbers = extractSpokenNumbers(transcript);
+      if (!numbers.length) {
+        heardNote = `Heard ${transcript.trim()}`;
+        statusNote = "";
+        render();
+        return;
+      }
+      bumpFromSpeech(numbers[numbers.length - 1], `Heard ${numbers[numbers.length - 1]}`);
     }
 
     function handleSpeechResult(event) {
@@ -245,91 +321,219 @@
       for (let i = 0; i < result.length; i += 1) {
         const transcript = result[i] && result[i].transcript;
         if (transcript && extractSpokenNumbers(transcript).length) {
-          applySpoken(transcript);
+          applyTranscript(transcript);
           return;
         }
       }
+      const fallback = result[0] && result[0].transcript;
+      if (fallback && fallback.trim()) applyTranscript(fallback);
     }
 
-    function ensureRecognition() {
-      if (recognition) return recognition;
-      const Ctor = speechRecognitionCtor();
-      if (!Ctor) return null;
-      recognition = new Ctor();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = "en-US";
-      recognition.maxAlternatives = 3;
-      recognition.onstart = () => {
-        listening = true;
+    function stopStream(stream) {
+      if (!stream) return;
+      stream.getTracks().forEach((track) => {
+        try {
+          track.stop();
+        } catch {
+          /* already stopped */
+        }
+      });
+    }
+
+    async function primeMic() {
+      const session = navigator.audioSession;
+      if (session) {
+        try {
+          session.type = "play-and-record";
+        } catch {
+          /* the browser decides the audio session */
+        }
+      }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("no mic");
+      }
+      return navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 },
+      });
+    }
+
+    function loadRecognizer() {
+      if (!recognizerPromise) {
+        recognizerPromise = (async () => {
+          if (!window.speechCommands || !window.speechCommands.create) {
+            await loadScript(TFJS_URL);
+            await loadScript(SPEECH_COMMANDS_URL);
+          }
+          const recognizer = window.speechCommands.create("BROWSER_FFT");
+          await recognizer.ensureModelLoaded();
+          deviceRecognizer = recognizer;
+          return recognizer;
+        })().catch((error) => {
+          recognizerPromise = null;
+          throw error;
+        });
+      }
+      return recognizerPromise;
+    }
+
+    function onDeviceResult(recognizer, result) {
+      if (!wantListen || !result || !result.scores) return;
+      const labels = recognizer.wordLabels();
+      let best = 0;
+      for (let i = 1; i < result.scores.length; i += 1) {
+        if (result.scores[i] > result.scores[best]) best = i;
+      }
+      const word = labels[best];
+      const digit = DIGITS[word];
+      if (!digit) return;
+      const now = Date.now();
+      if (word === lastHeardWord && now - lastHeardAt < SAME_WORD_MS) return;
+      if (now - lastHeardAt < HEARD_GAP_MS) return;
+      lastHeardWord = word;
+      lastHeardAt = now;
+      bumpFromSpeech(countFromHeardDigit(count, digit), `Heard ${word}`);
+    }
+
+    async function startOnDevice(stream) {
+      usingCloud = false;
+      statusNote = "Starting the mic…";
+      render();
+      try {
+        const recognizer = await loadRecognizer();
+        if (!wantListen) {
+          stopStream(stream);
+          return;
+        }
+        stopStream(stream);
+        if (recognizer.isListening()) {
+          try {
+            await recognizer.stopListening();
+          } catch {
+            /* already stopped */
+          }
+        }
+        await recognizer.listen((result) => onDeviceResult(recognizer, result), {
+          probabilityThreshold: 0.85,
+          overlapFactor: 0.5,
+          includeSpectrogram: false,
+          invokeCallbackOnNoiseAndUnknown: false,
+          suppressionTimeMillis: 450,
+        });
+        if (!wantListen) {
+          if (recognizer.isListening()) {
+            try {
+              await recognizer.stopListening();
+            } catch {
+              /* ignore */
+            }
+          }
+          return;
+        }
         statusNote = "";
         render();
-      };
-      recognition.onresult = handleSpeechResult;
-      recognition.onerror = (event) => {
-        const code = event && event.error;
-        if (code === "not-allowed" || code === "service-not-allowed") {
-          wantListen = false;
-          statusNote = "Mic blocked";
-        } else if (code === "audio-capture") {
-          wantListen = false;
-          statusNote = "No microphone";
-        } else if (code === "network") {
-          wantListen = false;
-          statusNote = "Voice needs a connection";
-        } else if (code === "language-not-supported") {
-          wantListen = false;
-          statusNote = "This browser can't listen";
-        }
+      } catch {
+        stopStream(stream);
+        wantListen = false;
+        statusNote = "Couldn't start the mic";
         render();
-      };
-      recognition.onend = () => {
-        listening = false;
-        if (!wantListen || document.visibilityState === "hidden") {
-          render();
-          return;
-        }
-        try {
-          recognition.start();
-        } catch {
-          render();
-        }
-      };
-      return recognition;
+      }
     }
 
-    function startListening() {
-      const engine = ensureRecognition();
-      if (!engine) {
-        statusNote = "This browser can't listen";
-        wantListen = false;
-        render();
-        return;
+    function startCloud() {
+      const Ctor = speechRecognitionCtor();
+      if (!Ctor) return false;
+      usingCloud = true;
+      if (!recognition) {
+        recognition = new Ctor();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = "en-US";
+        recognition.maxAlternatives = 3;
+        recognition.onstart = () => {
+          statusNote = "";
+          render();
+        };
+        recognition.onresult = handleSpeechResult;
+        recognition.onerror = (event) => {
+          const code = event && event.error;
+          if (code === "no-speech" || code === "aborted") return;
+          usingCloud = false;
+          try {
+            recognition.stop();
+          } catch {
+            /* already stopped */
+          }
+          startOnDevice(null);
+        };
+        recognition.onend = () => {
+          if (!usingCloud || !wantListen || document.visibilityState === "hidden") return;
+          window.setTimeout(() => {
+            if (!usingCloud || !wantListen) return;
+            try {
+              recognition.start();
+            } catch {
+              /* start() throws when the engine is already running */
+            }
+          }, 200);
+        };
       }
-      wantListen = true;
-      statusNote = "";
-      heardNote = "";
-      render();
-      if (listening) return;
       try {
-        engine.start();
+        recognition.start();
+        statusNote = "";
+        render();
+        return true;
       } catch {
-        /* start() throws if the engine is already running */
+        usingCloud = false;
+        return false;
       }
-      keepAwake();
     }
 
     function stopListening() {
       wantListen = false;
+      usingCloud = false;
       heardNote = "";
-      if (recognition && listening) {
+      statusNote = "";
+      if (recognition) {
         try {
-          recognition.stop();
+          if (recognition.abort) recognition.abort();
+          else recognition.stop();
         } catch {
-          listening = false;
+          /* already stopped */
         }
       }
+      if (deviceRecognizer && deviceRecognizer.isListening()) {
+        deviceRecognizer.stopListening().catch(() => {});
+      }
       render();
+    }
+
+    async function begin() {
+      if (wantListen) return;
+      wantListen = true;
+      heardNote = "";
+      statusNote = "Starting the mic…";
+      render();
+      let stream = null;
+      try {
+        stream = await primeMic();
+      } catch {
+        wantListen = false;
+        statusNote = "Mic blocked";
+        render();
+        return;
+      }
+      if (!wantListen) {
+        stopStream(stream);
+        return;
+      }
+      const cloudOk = !isPhone() && startCloud();
+      if (cloudOk) {
+        stopStream(stream);
+        keepAwake();
+        return;
+      }
+      await startOnDevice(stream);
+      keepAwake();
     }
 
     addBtn.addEventListener("click", () => {
@@ -368,11 +572,17 @@
 
     listenBtn.addEventListener("click", () => {
       if (wantListen) stopListening();
-      else startListening();
+      else begin();
     });
 
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible" && wantListen) startListening();
+      if (document.visibilityState === "visible" && wantListen && usingCloud && recognition) {
+        try {
+          recognition.start();
+        } catch {
+          /* already running */
+        }
+      }
     });
 
     render();
@@ -389,6 +599,6 @@
     }
   }
 
-  const api = { extractSpokenNumbers };
+  const api = { extractSpokenNumbers, countFromHeardDigit };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();
