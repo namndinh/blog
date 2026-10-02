@@ -41,7 +41,9 @@ body:has(.reps) .md-header,
 body:has(.reps) .md-tabs,
 body:has(.reps) .md-footer,
 body:has(.reps) .md-sidebar,
-body:has(.reps) .md-top {
+body:has(.reps) .md-top,
+body:has(.reps) .md-banner,
+body:has(.reps) .md-content__button {
   display: none;
 }
 
